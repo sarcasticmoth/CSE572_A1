@@ -1,9 +1,9 @@
 clear all
 clc
 
-pIMU = dlmread('1503512024740_IMU.txt');
-pEMG = dlmread('1503512024740_EMG.txt');
-vidFile = dlmread('1503512024740.txt');
+pIMU = dlmread('C:\Users\rando\OneDrive\Graduate School\SPRING 2019\CSE572_Data_Mining\CSE572_A1\Data\MyoData\user10\fork\1503512024740_IMU.txt');
+pEMG = dlmread('C:\Users\rando\OneDrive\Graduate School\SPRING 2019\CSE572_Data_Mining\CSE572_A1\Data\MyoData\user10\fork\1503512024740_EMG.txt');
+vidFile = dlmread('C:\Users\rando\OneDrive\Graduate School\SPRING 2019\CSE572_Data_Mining\CSE572_A1\Data\groundTruth\user10\fork\1503512024740.txt');
 
 % size(a,b) where a is rows and b is columns
 % size(pIMU) = 24297 11
@@ -23,10 +23,10 @@ vidFile = dlmread('1503512024740.txt');
 EA1 = [];
 % 2 to 11, eat of the IMU
 for i = 2:size(pIMU,2)
-    EA1 = [EA1 pIMU(floor(vidFile(1,1)*50/30):floor(vidFile(1,2)*50/30),i)'];
+    EA1 = [EA1; pIMU(floor(vidFile(1,1)*50/30):floor(vidFile(1,2)*50/30),i)'];
 end
 for i = 1:8
-    EA1 = [EA1 pEMG(floor(vidFile(1,1)*200/30):floor(vidFile(1,2)*200/30),i+1)'];
+    EA1 = [EA1; pEMG(floor(vidFile(1,1)*200/30):floor(vidFile(1,2)*200/30),i+1)'];
 end
 
 EA2 = [];

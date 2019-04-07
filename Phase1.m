@@ -6,7 +6,11 @@ workingDir = 'C:\Users\rando\OneDrive\Graduate School\SPRING 2019\CSE572_Data_Mi
 dataPath = fullfile(workingDir, 'Data', filesep);
 myoDataPath = fullfile(dataPath, 'MyoData', filesep);
 gtDataPath = fullfile(dataPath, 'groundTruth', filesep);
-endPath = fullfile(workingDir, 'Result', filesep);
+endPath = fullfile(workingDir, 'P1_Data', filesep);
+
+if ~exist(endPath, 'dir')
+    mkdir(endPath);
+end
 
 % remove folders . and ..
 list = dir(gtDataPath);
@@ -14,9 +18,7 @@ list = list(~ismember({list.name},{'.','..'}));
 
 % predefined variables
 imu_EA=[];
-% emg_EA=[];
 imu_NEA=[];
-emg_nNEA=[];
 
 % for each folder in the Data folder
 % should return 6 users/folders
@@ -54,6 +56,7 @@ for i = 1:size(list, 1)
     % we synchornize the frames where an eating action occurs
     % with the IMU and EMG data.
     % data outside of these start and end frames are non-eating
+    imu_EA=[];
     for j = 1: size(gtFileData, 1)
         % convert frames to sample numbers
         
@@ -95,6 +98,7 @@ for i = 1:size(list, 1)
     % we synchornize the frames where a non-eating action occurs
     % with the IMU and EMG data.
     % the data is located between an end frame and the next start frame
+    imu_NEA=[];
     for j = 2:size(gtFileData, 1)
         % convert frames to sample numbers
         
@@ -131,166 +135,166 @@ for i = 1:size(list, 1)
             end
         end
     end
+    
+    % matrices are organized in this way:
+    % action OriX
+    % action OriY
+    % action OriZ
+    % action OriW
+    % action AccX
+    % action AccY
+    % action AccZ
+    % action GyroX
+    % action GyroY
+    % action GyroZ
+
+    % the number of rows in each matrix divided by the total
+    % number of sensors gives estimate of number of actions
+    sensors = 10;
+    EA_actions = size(imu_EA, 1) / sensors;
+    NEA_actions = size(imu_NEA, 1) / sensors;
+
+    mat_EA = {};
+    mat_NEA = {};
+    OriX = [];
+    OriY = [];
+    OriZ = [];
+    OriW = [];
+    AccX = [];
+    AccY = [];
+    AccZ = [];
+    GyrX = [];
+    GyrY = [];
+    GyrZ = [];
+
+    a = 1;
+    for k=1:10:size(imu_EA)
+    %     fprintf('OriX: %i \n',i);
+        OriX = [OriX imu_EA(k,:)];
+        OriY = [OriY imu_EA(k + 1, :)];
+        OriZ = [OriZ imu_EA(k + 2, :)];
+        OriW = [OriW imu_EA(k + 3, :)];
+        AccX = [AccX imu_EA(k + 4, :)];
+        AccY = [AccY imu_EA(k + 5, :)];
+        AccZ = [AccZ imu_EA(k + 6, :)];
+        GyrX = [GyrX imu_EA(k + 7, :)];
+        GyrY = [GyrY imu_EA(k + 8, :)];
+        GyrZ = [GyrZ imu_EA(k + 9, :)];
+
+        ox = num2cell(OriX);
+        oy = num2cell(OriY);
+        oz = num2cell(OriZ);
+        ow = num2cell(OriW);
+        ax = num2cell(AccX);
+        ay = num2cell(AccY);
+        az = num2cell(AccZ);
+        gx = num2cell(GyrX);
+        gy = num2cell(GyrY);
+        gz = num2cell(GyrZ);
+
+        % insert sensor values
+        mat_EA{a,1} = strcat('EatingAction', num2str(a));
+        mat_EA{a,2} = ox;
+        mat_EA{a,3} = oy;
+        mat_EA{a,4} = oz;
+        mat_EA{a,5} = ow;
+        mat_EA{a,6} = ax;
+        mat_EA{a,7} = ay;
+        mat_EA{a,8} = az;
+        mat_EA{a,9} = gx;
+        mat_EA{a,10} = gy;
+        mat_EA{a,11} = gz;
+
+        % reset
+        a = a + 1;
+        OriX = [];
+        OriY = [];
+        OriZ = [];
+        OriW = [];
+        AccX = [];
+        AccY = [];
+        AccZ = [];
+        GyrX = [];
+        GyrY = [];
+        GyrZ = [];
+    end
+
+    % move the non-eating actions into a cell array
+
+    a = 1;
+    for k=1:10:size(imu_NEA)
+    %     fprintf('OriX: %i \n',i);
+        OriX = [OriX imu_EA(k,:)];
+        OriY = [OriY imu_EA(k + 1, :)];
+        OriZ = [OriZ imu_EA(k + 2, :)];
+        OriW = [OriW imu_EA(k + 3, :)];
+        AccX = [AccX imu_EA(k + 4, :)];
+        AccY = [AccY imu_EA(k + 5, :)];
+        AccZ = [AccZ imu_EA(k + 6, :)];
+        GyrX = [GyrX imu_EA(k + 7, :)];
+        GyrY = [GyrY imu_EA(k + 8, :)];
+        GyrZ = [GyrZ imu_EA(k + 9, :)];
+
+        ox = num2cell(OriX);
+        oy = num2cell(OriY);
+        oz = num2cell(OriZ);
+        ow = num2cell(OriW);
+        ax = num2cell(AccX);
+        ay = num2cell(AccY);
+        az = num2cell(AccZ);
+        gx = num2cell(GyrX);
+        gy = num2cell(GyrY);
+        gz = num2cell(GyrZ);
+
+        % insert sensor values
+        mat_NEA{a,1} = strcat('NonEatingAction', num2str(a));
+        mat_NEA{a,2} = ox;
+        mat_NEA{a,3} = oy;
+        mat_NEA{a,4} = oz;
+        mat_NEA{a,5} = ow;
+        mat_NEA{a,6} = ax;
+        mat_NEA{a,7} = ay;
+        mat_NEA{a,8} = az;
+        mat_NEA{a,9} = gx;
+        mat_NEA{a,10} = gy;
+        mat_NEA{a,11} = gz;
+
+        % reset
+        a = a + 1;
+        OriX = [];
+        OriY = [];
+        OriZ = [];
+        OriW = [];
+        AccX = [];
+        AccY = [];
+        AccZ = [];
+        GyrX = [];
+        GyrY = [];
+        GyrZ = [];
+    end
+
+    % save files as .mat files
+    % unable to save either a cell array or Table properly into a .csv file
+
+    % tables
+    table_EA = cell2table(mat_EA, 'VariableNames', {'EA', 'OriX', 'OriY', 'OriZ', 'OriW', 'AccX', 'AccY', 'AccZ', 'GyrX', 'GyrY', 'GyrZ'});
+    table_NEA = cell2table(mat_NEA, 'VariableNames', {'EA', 'OriX', 'OriY', 'OriZ', 'OriW', 'AccX', 'AccY', 'AccZ', 'GyrX', 'GyrY', 'GyrZ'});
+
+    user = list(i,:).name;
+    ea_cellarray_file = fullfile(endPath, user + "_IMU_Eating.csv");
+    ea_table_file = fullfile(endPath, user + "_IMU_Eating_Table.csv");  
+    
+    h = array2str(mat_EA{1,2});
+    
+    disp(ea_cellarray_file);
+%     writecell(mat_EA, ea_cellarray_file);
+    
+    disp(ea_table_file);
+%     writetable(table_EA, ea_table_file);
+
+
 end
 
-disp(size(imu_EA));
-disp(size(imu_NEA));
-
-% matrices are organized in this way:
-% action OriX
-% action OriY
-% action OriZ
-% action OriW
-% action AccX
-% action AccY
-% action AccZ
-% action GyroX
-% action GyroY
-% action GyroZ
-
-% the number of rows in each matrix divided by the total
-% number of sensors gives estimate of number of actions
-sensors = 10;
-EA_actions = size(imu_EA, 1) / sensors;
-NEA_actions = size(imu_NEA, 1) / sensors;
-
-disp(EA_actions);
-disp(NEA_actions);
-
-% save files
 
 
-totalFrames = size(vidFile, 1);
-eatingAction = 1;
-
-OriX=[];
-OriY=[];
-OriZ=[];
-OriW=[];
-AccX=[];
-AccY=[];
-AccZ=[];
-GyrX=[];
-GyrY=[];
-GyrZ=[];
-
-EAS={};
-NEAS={};
-
-for i = 1:totalFrames          
-%     OriX = [OriX; {strcat('Eating Action',num2str(eatingAction)),'OriX'}, pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 2)'];
-%     OriY = [OriY; {strcat('Eating Action',num2str(eatingAction)),'OriY'}, pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 3)'];
-%     OriZ = [OriZ; {strcat('Eating Action',num2str(eatingAction)),'OriZ'}, pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 4)'];
-%     OriW = [OriW; {strcat('Eating Action',num2str(eatingAction)),'OriW'}, pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 5)'];
-%     AccX = [AccX; {strcat('Eating Action',num2str(eatingAction)),'AccX'}, pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 6)'];
-%     AccY = [AccY; {strcat('Eating Action',num2str(eatingAction)),'AccY'}, pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 7)'];
-%     AccZ = [AccZ; {strcat('Eating Action',num2str(eatingAction)),'AccZ'}, pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 8)'];
-%     GyrX = [GyrX; {strcat('Eating Action',num2str(eatingAction)),'GyrX'}, pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 9)'];
-%     GyrY = [GyrY; {strcat('Eating Action',num2str(eatingAction)),'GyrY'}, pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 10)'];
-%     GyrZ = [GyrZ; {strcat('Eating Action',num2str(eatingAction)),'GyrZ'}, pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 11)'];
-    
-    OriX = [OriX pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 2)'];
-    OriY = [OriY pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 3)'];
-    OriZ = [OriZ pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 4)'];
-    OriW = [OriW pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 5)'];
-    AccX = [AccX pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 6)'];
-    AccY = [AccY pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 7)'];
-    AccZ = [AccZ pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 8)'];
-    GyrX = [GyrX pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 9)'];
-    GyrY = [GyrY pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 10)'];
-    GyrZ = [GyrZ pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 11)']; 
-    
-%     EA = [EA; OriX; OriY; OriZ; OriW; AccX; AccY; AccZ; GyrX; GyrY; GyrZ;]
-%     EA = [EA OriX OriY OriZ OriW AccX AccY AccZ GyrX GyrY GyrZ]
-	EA = {strcat('Eating Action',num2str(eatingAction)), OriX, OriY, OriZ, OriW, AccX, AccY, AccZ, GyrX, GyrY, GyrZ};
-
-    save(fullfile(output, list(i, :) + "_" + 'test.csv'), 'EA');
-    
-    EAS = [EAS; EA];
-    
-    % reset variables
-    eatingAction = eatingAction + 1;
-    
-    OriX=[];
-    OriY=[];
-    OriZ=[];
-    OriW=[];
-    AccX=[];
-    AccY=[];
-    AccZ=[];
-    GyrX=[];
-    GyrY=[];
-    GyrZ=[];
-
-end
-
-eatingAction = 1;
-
-% this is the table of Non Eating actions and the IMU data
-EAT = cell2table(EAS, 'VariableNames', {'EA', 'OriX', 'OriY', 'OriZ', 'OriW', 'AccX', 'AccY', 'AccZ', 'GyrX', 'GyrY', 'GyrZ'});
-% writetable(EAT, '1503512024740_EatingActions_Table.csv');
-% writecell(EAS, '1503512024740_EatingActions.csv');
-
-% non-eating actions:
-nonEatingAction = 1;
-
-for i = 2:totalFrames       
-%     OriX = [OriX; {strcat('Non-Eating Action',num2str(nonEatingAction)),'OriX'}, pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 2)'];
-%     OriY = [OriY; {strcat('Non-Eating Action',num2str(nonEatingAction)),'OriY'}, pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 3)'];
-%     OriZ = [OriZ; {strcat('Non-Eating Action',num2str(nonEatingAction)),'OriZ'}, pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 4)'];
-%     OriW = [OriW; {strcat('Non-Eating Action',num2str(nonEatingAction)),'OriW'}, pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 5)'];
-%     AccX = [AccX; {strcat('Non-Eating Action',num2str(nonEatingAction)),'AccX'}, pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 6)'];
-%     AccY = [AccY; {strcat('Non-Eating Action',num2str(nonEatingAction)),'AccY'}, pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 7)'];
-%     AccZ = [AccZ; {strcat('Non-Eating Action',num2str(nonEatingAction)),'AccZ'}, pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 8)'];
-%     GyrX = [GyrX; {strcat('Non-Eating Action',num2str(nonEatingAction)),'GyrX'}, pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 9)'];
-%     GyrY = [GyrY; {strcat('Non-Eating Action',num2str(nonEatingAction)),'GyrY'}, pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 10)'];
-%     GyrZ = [GyrZ; {strcat('Non-Eating Action',num2str(nonEatingAction)),'GyrZ'}, pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 11)'];
-    
-    OriX = [OriX pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 2)'];
-    OriY = [OriY pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 3)'];
-    OriZ = [OriZ pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 4)'];
-    OriW = [OriW pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 5)'];
-    AccX = [AccX pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 6)'];
-    AccY = [AccY pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 7)'];
-    AccZ = [AccZ pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 8)'];
-    GyrX = [GyrX pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 9)'];
-    GyrY = [GyrY pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 10)'];
-    GyrZ = [GyrZ pIMU(floor(vidFile(i,1)*(50/30)):floor(vidFile(i,2)*(50/30)), 11)'];
-       
-%   NEA = [EA; OriX; OriY; OriZ; OriW; AccX; AccY; AccZ; GyrX; GyrY; GyrZ;]
-%   NEA = [EA OriX OriY OriZ OriW AccX AccY AccZ GyrX GyrY GyrZ]
-	NEA = {strcat('Non Eating Action',num2str(nonEatingAction)), OriX, OriY, OriZ, OriW, AccX, AccY, AccZ, GyrX, GyrY, GyrZ};
-        
-    NEAS = [NEAS; NEA];
-    
-    % reset variables
-    nonEatingAction = nonEatingAction + 1;
-    
-    OriX=[];
-    OriY=[];
-    OriZ=[];
-    OriW=[];
-    AccX=[];
-    AccY=[];
-    AccZ=[];
-    GyrX=[];
-    GyrY=[];
-    GyrZ=[];
-
-end
-
-nonEatingAction = 1;
-
-% this is the table of Non Eating actions and the IMU data
-NEAT = cell2table(NEAS, 'VariableNames', {'EA', 'OriX', 'OriY', 'OriZ', 'OriW', 'AccX', 'AccY', 'AccZ', 'GyrX', 'GyrY', 'GyrZ'});
-% writecell(NEAS, '1503512024740_NonEatingActions.csv');
-% writetable(NEAT, '1503512024740_NonEatingActions_Table.csv');
-
-% sample, get OriX values for EA1
-x = EAT.OriX{1,1};
-y = NEAT.OriX{1,1};
-
-hold off;
-
-
-
+disp('end');
