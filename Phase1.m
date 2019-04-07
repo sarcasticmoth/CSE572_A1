@@ -2,7 +2,7 @@ clear all
 clc
 
 % file variables
-workingDir = 'C:\Users\rando\OneDrive\Graduate School\SPRING 2019\CSE572_Data_Mining\CSE572_A1\';
+workingDir = pwd;
 dataPath = fullfile(workingDir, 'Data', filesep);
 myoDataPath = fullfile(dataPath, 'MyoData', filesep);
 gtDataPath = fullfile(dataPath, 'groundTruth', filesep);
@@ -66,32 +66,7 @@ for i = 1:size(list, 1)
         
         found = IMUfile(s:e, 2:size(IMUfile, 2));
         
-        % compare the found rows to the matrix columns
-        % since the data is transposed
-        if size(found, 1) > size(imu_EA, 2) && j > 1
-            a = size(imu_EA, 1);
-            b = size(imu_EA, 2);
-            c = size(found, 1);
-            d = size(found, 2);
-            
-            newCols = c;
-            newRows = a + d;
-            
-            temp = zeros(newRows, newCols);
-            temp(1:a, 1:b) = imu_EA;
-            
-            imu_EA = temp;
-            
-            imu_EA((a+1):newRows, 1:newCols) = found';
-        else
-            if size(found, 1) < size(imu_EA, 2)
-                x = found';
-                x = [x zeros(size(x, 1), size(imu_EA, 2) - size(x, 2))];
-                imu_EA = [imu_EA; x];
-            else
-                imu_EA = [imu_EA; found'];
-            end
-        end        
+        imu_EA = [imu_EA; found];      
     end
     
     % for the non-eating data
@@ -108,191 +83,21 @@ for i = 1:size(list, 1)
         
         found = IMUfile(s:e, 2:size(IMUfile, 2));
         
-        % compare the found rows to the matrix columns
-        % since the data is transposed
-        if size(found, 1) > size(imu_NEA, 2) && j > 1
-            a = size(imu_NEA, 1);
-            b = size(imu_NEA, 2);
-            c = size(found, 1);
-            d = size(found, 2);
-            
-            newCols = c;
-            newRows = a + d;
-            
-            temp = zeros(newRows, newCols);
-            temp(1:a, 1:b) = imu_NEA;
-            
-            imu_NEA = temp;
-            
-            imu_NEA((a+1):newRows, 1:newCols) = found';
-        else
-            if size(found, 1) < size(imu_NEA, 2)
-                x = found';
-                x = [x zeros(size(x, 1), size(imu_NEA, 2) - size(x, 2))];
-                imu_NEA = [imu_NEA; x];
-            else
-                imu_NEA = [imu_NEA; found'];
-            end
-        end
+        imu_NEA = [imu_NEA; found];
     end
     
     % matrices are organized in this way:
-    % action OriX
-    % action OriY
-    % action OriZ
-    % action OriW
-    % action AccX
-    % action AccY
-    % action AccZ
-    % action GyroX
-    % action GyroY
-    % action GyroZ
+    % for all actions for a user
+    % OriX OriY OriZ OriW AccX AccY AccZ GyroX GyroY GyroZ
 
-    % the number of rows in each matrix divided by the total
-    % number of sensors gives estimate of number of actions
-    sensors = 10;
-    EA_actions = size(imu_EA, 1) / sensors;
-    NEA_actions = size(imu_NEA, 1) / sensors;
-
-    mat_EA = {};
-    mat_NEA = {};
-    OriX = [];
-    OriY = [];
-    OriZ = [];
-    OriW = [];
-    AccX = [];
-    AccY = [];
-    AccZ = [];
-    GyrX = [];
-    GyrY = [];
-    GyrZ = [];
-
-    a = 1;
-    for k=1:10:size(imu_EA)
-    %     fprintf('OriX: %i \n',i);
-        OriX = [OriX imu_EA(k,:)];
-        OriY = [OriY imu_EA(k + 1, :)];
-        OriZ = [OriZ imu_EA(k + 2, :)];
-        OriW = [OriW imu_EA(k + 3, :)];
-        AccX = [AccX imu_EA(k + 4, :)];
-        AccY = [AccY imu_EA(k + 5, :)];
-        AccZ = [AccZ imu_EA(k + 6, :)];
-        GyrX = [GyrX imu_EA(k + 7, :)];
-        GyrY = [GyrY imu_EA(k + 8, :)];
-        GyrZ = [GyrZ imu_EA(k + 9, :)];
-
-        ox = num2cell(OriX);
-        oy = num2cell(OriY);
-        oz = num2cell(OriZ);
-        ow = num2cell(OriW);
-        ax = num2cell(AccX);
-        ay = num2cell(AccY);
-        az = num2cell(AccZ);
-        gx = num2cell(GyrX);
-        gy = num2cell(GyrY);
-        gz = num2cell(GyrZ);
-
-        % insert sensor values
-        mat_EA{a,1} = strcat('EatingAction', num2str(a));
-        mat_EA{a,2} = ox;
-        mat_EA{a,3} = oy;
-        mat_EA{a,4} = oz;
-        mat_EA{a,5} = ow;
-        mat_EA{a,6} = ax;
-        mat_EA{a,7} = ay;
-        mat_EA{a,8} = az;
-        mat_EA{a,9} = gx;
-        mat_EA{a,10} = gy;
-        mat_EA{a,11} = gz;
-
-        % reset
-        a = a + 1;
-        OriX = [];
-        OriY = [];
-        OriZ = [];
-        OriW = [];
-        AccX = [];
-        AccY = [];
-        AccZ = [];
-        GyrX = [];
-        GyrY = [];
-        GyrZ = [];
-    end
-
-    % move the non-eating actions into a cell array
-
-    a = 1;
-    for k=1:10:size(imu_NEA)
-    %     fprintf('OriX: %i \n',i);
-        OriX = [OriX imu_EA(k,:)];
-        OriY = [OriY imu_EA(k + 1, :)];
-        OriZ = [OriZ imu_EA(k + 2, :)];
-        OriW = [OriW imu_EA(k + 3, :)];
-        AccX = [AccX imu_EA(k + 4, :)];
-        AccY = [AccY imu_EA(k + 5, :)];
-        AccZ = [AccZ imu_EA(k + 6, :)];
-        GyrX = [GyrX imu_EA(k + 7, :)];
-        GyrY = [GyrY imu_EA(k + 8, :)];
-        GyrZ = [GyrZ imu_EA(k + 9, :)];
-
-        ox = num2cell(OriX);
-        oy = num2cell(OriY);
-        oz = num2cell(OriZ);
-        ow = num2cell(OriW);
-        ax = num2cell(AccX);
-        ay = num2cell(AccY);
-        az = num2cell(AccZ);
-        gx = num2cell(GyrX);
-        gy = num2cell(GyrY);
-        gz = num2cell(GyrZ);
-
-        % insert sensor values
-        mat_NEA{a,1} = strcat('NonEatingAction', num2str(a));
-        mat_NEA{a,2} = ox;
-        mat_NEA{a,3} = oy;
-        mat_NEA{a,4} = oz;
-        mat_NEA{a,5} = ow;
-        mat_NEA{a,6} = ax;
-        mat_NEA{a,7} = ay;
-        mat_NEA{a,8} = az;
-        mat_NEA{a,9} = gx;
-        mat_NEA{a,10} = gy;
-        mat_NEA{a,11} = gz;
-
-        % reset
-        a = a + 1;
-        OriX = [];
-        OriY = [];
-        OriZ = [];
-        OriW = [];
-        AccX = [];
-        AccY = [];
-        AccZ = [];
-        GyrX = [];
-        GyrY = [];
-        GyrZ = [];
-    end
-
-    % save files as .mat files
-    % unable to save either a cell array or Table properly into a .csv file
-
-    % tables
-    table_EA = cell2table(mat_EA, 'VariableNames', {'EA', 'OriX', 'OriY', 'OriZ', 'OriW', 'AccX', 'AccY', 'AccZ', 'GyrX', 'GyrY', 'GyrZ'});
-    table_NEA = cell2table(mat_NEA, 'VariableNames', {'EA', 'OriX', 'OriY', 'OriZ', 'OriW', 'AccX', 'AccY', 'AccZ', 'GyrX', 'GyrY', 'GyrZ'});
-
-    user = list(i,:).name;
-    ea_cellarray_file = fullfile(endPath, user + "_IMU_Eating.csv");
-    ea_table_file = fullfile(endPath, user + "_IMU_Eating_Table.csv");  
+    % save to files
+    EAfile = fullfile(endPath, list(i,:).name + "_" + 'IMU_Eat.csv');
+    NEAfile = fullfile(endPath, list(i,:).name + "_" + 'IMU_NotEat.csv');
     
-    h = array2str(mat_EA{1,2});
-    
-    disp(ea_cellarray_file);
-%     writecell(mat_EA, ea_cellarray_file);
-    
-    disp(ea_table_file);
-%     writetable(table_EA, ea_table_file);
-
-
+    disp(EAfile);
+    writematrix(imu_EA, EAfile);
+    disp(NEAfile);
+    writematrix(imu_NEA, NEAfile);
 end
 
 
