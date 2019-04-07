@@ -42,30 +42,40 @@ for i = 1:totalFrames
     % second column
     last = floor(groundTruthFile(i,2)*(50/30));
         
-    OriX = [OriX; {strcat('Eating Action',num2str(eatingAction)),'OriX'}, pIMU(start:last, 2)'];
-    OriY = [OriY; {strcat('Eating Action',num2str(eatingAction)),'OriY'}, pIMU(start:last, 3)'];
-    OriZ = [OriZ; {strcat('Eating Action',num2str(eatingAction)),'OriZ'}, pIMU(start:last, 4)'];
-    OriW = [OriW; {strcat('Eating Action',num2str(eatingAction)),'OriW'}, pIMU(start:last, 5)'];
-    AccX = [AccX; {strcat('Eating Action',num2str(eatingAction)),'AccX'}, pIMU(start:last, 6)'];
-    AccY = [AccY; {strcat('Eating Action',num2str(eatingAction)),'AccY'}, pIMU(start:last, 7)'];
-    AccZ = [AccZ; {strcat('Eating Action',num2str(eatingAction)),'AccZ'}, pIMU(start:last, 8)'];
-    GyrX = [GyrX; {strcat('Eating Action',num2str(eatingAction)),'GyrX'}, pIMU(start:last, 9)'];
-    GyrY = [GyrY; {strcat('Eating Action',num2str(eatingAction)),'GyrY'}, pIMU(start:last, 10)'];
-    GyrZ = [GyrZ; {strcat('Eating Action',num2str(eatingAction)),'GyrZ'}, pIMU(start:last, 11)'];
+%     OriX = [OriX; {strcat('Eating Action',num2str(eatingAction)),'OriX'}, pIMU(start:last, 2)'];
+%     OriY = [OriY; {strcat('Eating Action',num2str(eatingAction)),'OriY'}, pIMU(start:last, 3)'];
+%     OriZ = [OriZ; {strcat('Eating Action',num2str(eatingAction)),'OriZ'}, pIMU(start:last, 4)'];
+%     OriW = [OriW; {strcat('Eating Action',num2str(eatingAction)),'OriW'}, pIMU(start:last, 5)'];
+%     AccX = [AccX; {strcat('Eating Action',num2str(eatingAction)),'AccX'}, pIMU(start:last, 6)'];
+%     AccY = [AccY; {strcat('Eating Action',num2str(eatingAction)),'AccY'}, pIMU(start:last, 7)'];
+%     AccZ = [AccZ; {strcat('Eating Action',num2str(eatingAction)),'AccZ'}, pIMU(start:last, 8)'];
+%     GyrX = [GyrX; {strcat('Eating Action',num2str(eatingAction)),'GyrX'}, pIMU(start:last, 9)'];
+%     GyrY = [GyrY; {strcat('Eating Action',num2str(eatingAction)),'GyrY'}, pIMU(start:last, 10)'];
+%     GyrZ = [GyrZ; {strcat('Eating Action',num2str(eatingAction)),'GyrZ'}, pIMU(start:last, 11)'];
     
-%     OriX = [OriX pIMU(start:last, 2)'];
-%     OriY = [OriY pIMU(start:last, 3)'];
-%     OriZ = [OriZ pIMU(start:last, 4)'];
-%     OriW = [OriW pIMU(start:last, 5)'];
-%     AccX = [AccX pIMU(start:last, 6)'];
-%     AccY = [AccY pIMU(start:last, 7)'];
-%     AccZ = [AccZ pIMU(start:last, 8)'];
-%     GyrX = [GyrX pIMU(start:last, 9)'];
-%     GyrY = [GyrY pIMU(start:last, 10)'];
-%     GyrZ = [GyrZ pIMU(start:last, 11)'];
+    OriX = [OriX pIMU(start:last, 2)'];
+    OriY = [OriY pIMU(start:last, 3)'];
+    OriZ = [OriZ pIMU(start:last, 4)'];
+    OriW = [OriW pIMU(start:last, 5)'];
+    AccX = [AccX pIMU(start:last, 6)'];
+    AccY = [AccY pIMU(start:last, 7)'];
+    AccZ = [AccZ pIMU(start:last, 8)'];
+    GyrX = [GyrX pIMU(start:last, 9)'];
+    GyrY = [GyrY pIMU(start:last, 10)'];
+    GyrZ = [GyrZ pIMU(start:last, 11)'];
        
-    EA = [EA; OriX; OriY; OriZ; OriW; AccX; AccY; AccZ; GyrX; GyrY; GyrZ;]
+%     EA = [EA; OriX; OriY; OriZ; OriW; AccX; AccY; AccZ; GyrX; GyrY; GyrZ;]
 %     EA = [EA OriX OriY OriZ OriW AccX AccY AccZ GyrX GyrY GyrZ]
+    EA = [EA;OriX];
+    EA = [EA OriY];
+    EA = [EA OriZ];
+    EA = [EA OriW];
+    EA = [EA AccX];
+    EA = [EA AccY];
+    EA = [EA AccZ];
+    EA = [EA GyrX];
+    EA = [EA GyrY];
+    EA = [EA GyrZ];
     
     % reset variables
     eatingAction = eatingAction + 1;
@@ -128,7 +138,7 @@ for i = 2:totalFrames
 %     GyrY = [GyrY pIMU(start:last, 10)'];
 %     GyrZ = [GyrZ pIMU(start:last, 11)'];
        
-    NEA = [EA; OriX; OriY; OriZ; OriW; AccX; AccY; AccZ; GyrX; GyrY; GyrZ;]
+%     NEA = [EA; OriX; OriY; OriZ; OriW; AccX; AccY; AccZ; GyrX; GyrY; GyrZ;]
 %     NEA = [EA OriX OriY OriZ OriW AccX AccY AccZ GyrX GyrY GyrZ]
     
     % reset variables
