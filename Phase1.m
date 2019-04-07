@@ -24,7 +24,7 @@ imu_NEA=[];
 % should return 6 users/folders
 for i = 1:size(list, 1)
     % get the user fork path
-    forkPath = fullfile(gtDataPath, list(i,:).name, "fork");
+    forkPath = fullfile(gtDataPath, user, "fork");
     
     % get the list of files in the folder
     forklist = dir(forkPath);
@@ -91,8 +91,9 @@ for i = 1:size(list, 1)
     % OriX OriY OriZ OriW AccX AccY AccZ GyroX GyroY GyroZ
 
     % save to files
-    EAfile = fullfile(endPath, list(i,:).name + "_" + 'IMU_Eat.csv');
-    NEAfile = fullfile(endPath, list(i,:).name + "_" + 'IMU_NotEat.csv');
+    user = list(i,:).name;
+    EAfile = fullfile(endPath, user + "_" + 'IMU_Eat.csv');
+    NEAfile = fullfile(endPath, user + "_" + 'IMU_NotEat.csv');
     
     disp(EAfile);
     writematrix(imu_EA, EAfile);
