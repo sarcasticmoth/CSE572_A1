@@ -5,7 +5,7 @@ clc
 
 workingdir = pwd;
 P1_DataPath = fullfile(workingdir, 'P1_Data');
-endpath = fullfile(workingdir, 'P2_Data', 'Max');
+endpath = fullfile(workingdir, 'P2_Data', 'Range');
 
 if ~exist(endpath, 'dir')
     mkdir(endpath);
@@ -33,8 +33,8 @@ for i=1:size(tmp2, 1)
     users = [users; cellstr(tmp2(i).name)];
 end
 
-all_ea_max_matrix=[];
-all_nea_max_matrix=[];
+all_ea_range_matrix=[];
+all_nea_range_matrix=[];
 
 ea_matrix=[];
 nea_matrix=[];
@@ -51,9 +51,9 @@ for i=1:size(users, 1)
     
     % mean calculations
     % means of each sensor/column are stored
-    ea_imu_max = max(ea_matrix);
+    ea_imu_range = max(ea_matrix) - min(ea_matrix);
     
-    all_ea_max_matrix = [all_ea_max_matrix; ea_imu_max];
+    all_ea_range_matrix = [all_ea_range_matrix; ea_imu_range];
     
     % non-eating action data
     noneat = userfiles(contains(userfiles, '_NotEat'));
@@ -64,9 +64,9 @@ for i=1:size(users, 1)
     
     % mean calculations
     % means of each sensor/column are stored
-    nea_imu_max = max(nea_matrix);
+    nea_imu_range = max(nea_matrix) - min(nea_matrix);
     
-    all_nea_max_matrix = [all_nea_max_matrix; nea_imu_max];
+    all_nea_range_matrix = [all_nea_range_matrix; nea_imu_range];
     
     % save output to file
     user = users(i,:);
@@ -74,22 +74,22 @@ for i=1:size(users, 1)
     neafileoutput = fullfile(endpath, user + "_" + 'IMU_NotEat.csv');
     
     disp(eafileoutput);
-    writematrix(ea_imu_max, eafileoutput);
+    writematrix(ea_imu_range, eafileoutput);
     disp(neafileoutput);
-    writematrix(nea_imu_max, neafileoutput);
+    writematrix(nea_imu_range, neafileoutput);
     
 end
 
 % save all mean data for all users %
-alleafileoutput = fullfile(endpath, 'IMU_Max_Eat.csv');
+alleafileoutput = fullfile(endpath, 'IMU_Range_Eat.csv');
 disp(alleafileoutput);
-writematrix(all_ea_max_matrix, alleafileoutput);
-allneafileoutput = fullfile(endpath, 'IMU_Max_NotEat.csv');
+writematrix(all_ea_range_matrix, alleafileoutput);
+allneafileoutput = fullfile(endpath, 'IMU_Range_NotEat.csv');
 disp(allneafileoutput);
-writematrix(all_nea_max_matrix, allneafileoutput);
+writematrix(all_nea_range_matrix, allneafileoutput);
 
 % Graph %
-endgraphpath = fullfile(workingdir, 'P2_Graphs', 'Max');
+endgraphpath = fullfile(workingdir, 'P2_Graphs', 'Range');
 
 if ~exist(endgraphpath, 'dir')
     mkdir(endgraphpath);
@@ -106,18 +106,18 @@ labels = ["Eating", "Non-Eating"];
 
 % loop through all the sensors, left to right
 % matrices for eating and non-eating are the same size
-for i=1:size(all_ea_max_matrix,1)
-    eat = all_ea_max_matrix(:,i);
-    noteat = all_nea_max_matrix(:,i);
+for i=1:size(all_ea_range_matrix,1)
+    eat = all_ea_range_matrix(:,i);
+    noteat = all_nea_range_matrix(:,i);
     
     graph = plot(u, eat, 'm');
     hold on;
     graph = plot(u, noteat, 'g');
-    title(sensors(i) + " Max");
+    title(sensors(i) + " Range");
     legend(labels);
     set(gcf, 'Units', 'Normalized');
     hold off;
-    path = fullfile(endgraphpath, sensors(i) + "_max.jpg");
+    path = fullfile(endgraphpath, sensors(i) + "_range.jpg");
     saveas(graph, path, 'jpg');
 end
 
