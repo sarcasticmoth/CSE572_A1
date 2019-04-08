@@ -1,14 +1,20 @@
 % feature extraction
 
 clear all
-clc
 
 workingdir = pwd;
 P1_DataPath = fullfile(workingdir, 'P1_Data');
 endpath = fullfile(workingdir, 'P2_Data', 'Mean');
+endpatheatall = fullfile(workingdir, 'P2_Data', 'Eat');
+endpathneatall = fullfile(workingdir, 'P2_Data', 'NotEat');
 
 if ~exist(endpath, 'dir')
     mkdir(endpath);
+end
+
+if ~exist(endpatheatall, 'dir') | ~exist(endpathneatall, 'dir')
+    mkdir(endpatheatall);
+    mkdir(endpathneatall);
 end
 
 % list of files in the P1 Data Path
@@ -89,10 +95,10 @@ for i=1:size(users, 1)
 end
 
 % save all mean data for all users %
-alleafileoutput = fullfile(endpath, 'IMU_Mean_Eat.csv');
+alleafileoutput = fullfile(endpatheatall, 'IMU_Mean_Eat.csv');
 disp(alleafileoutput);
 writematrix(all_ea_mean_matrix, alleafileoutput);
-allneafileoutput = fullfile(endpath, 'IMU_Mean_NotEat.csv');
+allneafileoutput = fullfile(endpathneatall, 'IMU_Mean_NotEat.csv');
 disp(allneafileoutput);
 writematrix(all_nea_mean_matrix, allneafileoutput);
 

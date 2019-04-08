@@ -1,14 +1,20 @@
 % feature extraction
 
 clear all
-clc
 
 workingdir = pwd;
 P1_DataPath = fullfile(workingdir, 'P1_Data');
 endpath = fullfile(workingdir, 'P2_Data', 'StdDev');
+endpatheatall = fullfile(workingdir, 'P2_Data', 'Eat');
+endpathneatall = fullfile(workingdir, 'P2_Data', 'NotEat');
 
 if ~exist(endpath, 'dir')
     mkdir(endpath);
+end
+
+if ~exist(endpatheatall, 'dir') | ~exist(endpathneatall, 'dir')
+    mkdir(endpatheatall);
+    mkdir(endpathneatall);
 end
 
 % list of files in the P1 Data Path
@@ -81,10 +87,10 @@ for i=1:size(users, 1)
 end
 
 % save all std dev data for all users %
-alleafileoutput = fullfile(endpath, 'IMU_StdDev_Eat.csv');
+alleafileoutput = fullfile(endpatheatall, 'IMU_StdDev_Eat.csv');
 disp(alleafileoutput);
 writematrix(all_ea_stddev_matrix, alleafileoutput);
-allneafileoutput = fullfile(endpath, 'IMU_StdDev_NotEat.csv');
+allneafileoutput = fullfile(endpathneatall, 'IMU_StdDev_NotEat.csv');
 disp(allneafileoutput);
 writematrix(all_nea_stddev_matrix, allneafileoutput);
 
