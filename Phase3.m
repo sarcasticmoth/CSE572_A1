@@ -179,3 +179,17 @@ path = fullfile(pcaendpath, "EA_EG_spider.jpg");
 saveas(graph3, path, 'jpg');
 path = fullfile(pcaendpath, "NEA_EG_spider.jpg");
 saveas(graph4, path, 'jpg');
+
+% plots with new feature matrix and 3 principal components
+for i=1:3 
+    subplot(3,1,i);
+    hold on;
+    graph5 = plot(ea_feature_matrix(:,i) * pca_ea_coeff(i));
+    graph5 = plot(nea_feature_matrix(:,i) * pca_nea_coeff(i));
+    legend('Eating', 'Non-Eating');
+end
+
+path = fullfile(pcaendpath, "PrinCompGraphs.jpg");
+saveas(graph5, path, 'jpg');
+
+
