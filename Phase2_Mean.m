@@ -33,14 +33,6 @@ for i=1:size(tmp2, 1)
     users = [users; cellstr(tmp2(i).name)];
 end
 
-% loop through users
-% get eat data and non-eat data per user
-% use xlsread(file, A:A) to pull columns
-
-% take mean
-% normalize
-% save result
-
 all_ea_mean_matrix=[];
 all_nea_mean_matrix=[];
 
