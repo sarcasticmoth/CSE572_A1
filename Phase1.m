@@ -21,7 +21,7 @@ imu_EA=[];
 imu_NEA=[];
 
 % for each folder in the Data folder
-% should return 6 users/folders
+% should return 10 users/folders
 for i = 1:size(list, 1)
     % get the user fork path
     forkPath = fullfile(gtDataPath, list(i,:).name, "fork");

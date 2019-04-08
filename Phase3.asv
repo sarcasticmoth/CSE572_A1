@@ -1,0 +1,122 @@
+clear all
+clc
+
+% PCA helps distinguish features but keeping features
+% that have the maximum distance between eating
+% and non-eating actions
+
+workingdir = pwd
+endpath = fullfile(workingdir, "P3_Data");
+pcaendpath = fullfile(endpath, "PCA");
+
+P2_datapath = fullfile(workingdir, "P2_Data");
+P2_eat = fullfile(P2_datapath, "Eat");
+P2_neat = fullfile(P2_datapath, "NotEat");
+
+if ~exist(endpath, 'dir')
+    mkdir(endpath);
+    mkdir(pcaendpath);
+end
+
+% list of files in the P2 Eat
+% remove folders . and ..
+cd(P2_eat);
+tmp = dir('*.csv');
+cd('..\..');
+
+cd(P2_neat);
+tmp2 = dir('*.csv');
+cd('..\..');
+
+tmp3 = dir(fullfile(workingdir, 'Data', 'MyoData'));
+tmp3 = tmp3(~ismember({tmp3.name},{'.','..'}));
+
+% create a string array of the file names
+eatfiles = [];
+for i=1:size(tmp, 1)
+    eatfiles = [eatfiles; cellstr(tmp(i).name)];
+end
+neatfiles = [];
+for i=1:size(tmp2, 1)
+    neatfiles = [neatfiles; cellstr(tmp2(i).name)];
+end
+
+users = [];
+for i=1:size(tmp3, 1)
+    users = [users; cellstr(tmp3(i).name)];
+end
+
+% build the feature matrix
+% each matrix is per user
+
+ea_feature_matrix=[];
+ea_max_matrix=[];
+ea_mean_matrix=[];
+ea_min_matrix=[];
+ea_range_matrix=[];
+ea_stddev_matrix=[];
+
+for i = 1:size(eatfiles,1);
+    
+    p = fullfile(P2_eat, eatfiles(i));
+    
+    if contains(eatfiles(i), 'Max')
+        ea_max_matrix = readmatrix(p);
+    end
+    if contains(eatfiles(i), 'Mean')
+        ea_mean_matrix = readmatrix(p);
+    end
+    if contains(eatfiles(i), 'Min')
+        ea_min_matrix = readmatrix(p);
+    end
+    if contains(eatfiles(i), 'Range')
+        ea_range_matrix = readmatrix(p);
+    end
+    if contains(eatfiles(i), 'StdDev')
+        ea_stddev_matrix = readmatrix(p);
+    end
+end
+
+ea_max_matrix_app=[];
+ea_mean_matrix_app=[];
+ea_min_matrix_app=[];
+ea_range_matrix_app=[];
+ea_stddev_matrix_app=[];
+
+% all the matrices are the same size
+for i = 1:size(ea_max_matrix, 1)
+    ea_max_matrix_app = [ea_max_matrix_app ea_max_matrix(i,:)];
+    ea_mean_matrix_app = [ea_mean_matrix_app ea_mean_matrix(i,:)];
+    ea_min_matrix_app = [ea_min_matrix_app ea_min_matrix(i,:)];
+    ea_range_matrix_app = [ea_range_matrix_app ea_range_matrix(i,:)];
+    ea_stddev_matrix_app = [ea_stddev_matrix_app ea_stddev_matrix(i,:)];
+end
+
+% create the feature matrix
+ea_feature_matrix = [ea_max_matrix_app' ea_mean_matrix_app' ea_min_matrix_app' ea_range_matrix_app' ea_stddev_matrix_app'];
+
+% PCA
+[pca_ea_coeff, pca_ea_score, pca_ea_latent] = pca(ea_feature_matrix);
+
+% pca_ea_coeff - matrix of eigen vectors
+% highest eigenvalue to lowest eigenvalue per component (each
+% column)
+% pca_ea_score - eigenvalues
+% pca_ea_latent - eigenvalues of the cov matrix of ea_feature_matrix
+
+% new feature matrix
+new_ea_feature_matrix = ea_feature_matrix * pca_ea_coeff;
+
+% plot of the eigenvectors
+% graph = plot(pca_ea_latent);
+% title("Eigenvalues");
+
+% x = corrcoef(data);
+figure;
+for i=1:3
+    subplot(3, 1, i);
+    hold on;
+	plot(ea_feature_matrix(:,i) * pca_ea_coeff(i))
+    legend('eating');
+end
+
