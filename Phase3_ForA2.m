@@ -105,19 +105,17 @@ for i=1:size(users,1)
     [pca_coeff, pca_score, pca_latent] = pca(nea_featurematrix);
     nea_new_featurematrix = nea_featurematrix * pca_coeff;
     
-    disp(ea_new_fm_file);
+    targetdata = [size(];
+        
+    disp(fn3);
     writematrix(ea_new_featurematrix, ea_new_fm_file);
-    disp(nea_new_fm_file);
+    disp(fn4);
     writematrix(nea_new_featurematrix, nea_new_fm_file);
     
     % creating training data
     data = cvpartition(size(ea_new_featurematrix,1), 'holdout', 0.4)
     ea_traindata = ea_new_featurematrix(~data.test, :);
     ea_testdata = ea_new_featurematrix(data.test, :);
-    
-    ndata = cvpartition(size(nea_new_featurematrix,1), 'holdout', 0.4)
-    nea_traindata = nea_new_featurematrix(~ndata.test, :);
-    nea_testdata = nea_new_featurematrix(ndata.test, :);
     
     % save data
     fn5 = "Eat_Test_Data.csv";
