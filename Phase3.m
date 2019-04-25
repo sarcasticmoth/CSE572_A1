@@ -56,7 +56,7 @@ ea_min_matrix=[];
 ea_range_matrix=[];
 ea_stddev_matrix=[];
 
-for i = 1:size(eatfiles,1);
+for i = 1:size(eatfiles,1)
     
     p = fullfile(P2_eat, eatfiles(i));
     
@@ -160,6 +160,8 @@ nea_feature_matrix = [nea_max_matrix_app' nea_mean_matrix_app' nea_min_matrix_ap
 % new feature matrix
 new_ea_feature_matrix = ea_feature_matrix * pca_ea_coeff;
 new_nea_feature_matrix = nea_feature_matrix * pca_nea_coeff;
+
+
 
 % graphs
 graph1 = plot(pca_ea_latent);
