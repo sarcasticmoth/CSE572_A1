@@ -38,7 +38,7 @@ net = train(net, train_data', train_target_data');
 nn = sim(net, test_data');
 nn(nn >= 0.5) = 1;
 nn(nn < 0.5) = 0;
-[confusion_matrix, ~] = confusionmat(nn, test_target_data);
+[confusion_matrix, ~] = confusionmat(nn, test_target_data');
 
 % calculate precision
 for i=1:size(confusion_matrix,1)

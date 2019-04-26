@@ -115,7 +115,7 @@ nea_min_matrix=[];
 nea_range_matrix=[];
 nea_stddev_matrix=[];
 
-for i = 1:size(neatfiles,1);
+for i = 1:size(neatfiles,1)
     
     p = fullfile(P2_neat, neatfiles(i));
     
@@ -170,18 +170,33 @@ new_ea_feature_matrix = ea_feature_matrix * pca_ea_coeff;
 new_nea_feature_matrix = nea_feature_matrix * pca_nea_coeff;
 
 % create training and testing data sets
-[ea_train_data, ~, ea_test_data] = dividerand(new_ea_feature_matrix', 0.6, 0, 0.4);
-[nea_train_data, ~, nea_test_data] = dividerand(new_nea_feature_matrix', 0.6, 0, 0.4);
-
-train_data = [ea_train_data; nea_train_data];
-test_data = [ea_test_data; nea_test_data];
-train_target_data = [ones(size(ea_train_data, 1), 1); zeros(size(nea_train_data, 1), 1)]
-test_target_data = [ones(size(ea_test_data, 1), 1); zeros(size(nea_test_data, 1), 1)]
+[ea_train_data, ea_validation, ea_test_data] = dividerand(new_ea_feature_matrix', 0.6, 0, 0.4);
+[nea_train_data, nea_validation, nea_test_data] = dividerand(new_nea_feature_matrix', 0.6, 0, 0.4);
+train_data = [ea_train_data'; nea_train_data'];
+test_data = [ea_test_data'; nea_test_data'];
+train_target_data = [ones(size(ea_train_data', 1), 1); zeros(size(nea_train_data', 1), 1)]
+test_target_data = [ones(size(ea_test_data', 1), 1); zeros(size(nea_test_data', 1), 1)]
 
 fn1 = "Train_Data.csv";
 fn2 = "Test_Data.csv";
 fn3 = "Train_Target_Data.csv";
 fn4 = "Train_Test_Data.csv";
+
+% test
+
+%edata = cvpartition(size(new_ea_feature_matrix, 1), 'holdout', 0.4);
+%nedata = cvpartition(size(new_nea_feature_matrix, 1), 'holdout', 0.4);
+
+%ea_test_data = new_ea_feature_matrix(edata.test, :);
+%ea_train_data = new_ea_feature_matrix(~edata.test, :);
+%nea_test_data = new_nea_feature_matrix(nedata.test, :);
+%nea_train_data = new_nea_feature_matrix(~nedata.test, :);
+%train_data = [ea_train_data, nea_train_data];
+%test_data = [ea_test_data, nea_test_data];
+%train_target_data = [ones(size(ea_train_data, 1), size(ea_train_data, 2)), zeros(size(nea_train_data, 1), size(nea_train_data, 2))]
+%test_target_data = [ones(size(ea_test_data, 1), size(ea_test_data, 2)), zeros(size(nea_test_data, 1), size(nea_test_data, 2))]
+
+% end test
 
 disp(fn1);
 writematrix(train_data, fullfile(training_endpath, fn1));
