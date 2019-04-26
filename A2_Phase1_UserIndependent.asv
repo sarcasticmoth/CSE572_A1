@@ -112,10 +112,7 @@ svm_fscore = 2 * svm_recall * svm_precision / (svm_precision + svm_recall)
 disp("end training");
 
 % save scores
-columns = ["Neural Network FScore", "Neural Network Recall" , "Neural Network Precision", "Decision Tree FScore", "Decision Tree Recall", "Decision Tree Precision", "SVM FScore", "SVM Recall", "SVM Precision"];
+columns = ["Neural Network FScore", "Neural Network Precision", "Decision Tree FScore", "Decision Tree Recall", "Decision Tree Precision", "Decision Tree FScore", "Decision Tree Recall", "Decision Tree Precision"];
 data = [nn_fscore, nn_recall, nn_precision, dt_fscore, dt_recall, dt_precision, svm_fscore, svm_recall, svm_precision];
 
-ind_data = [columns; data];
-writematrix(ind_data, fullfile(endpath, "users_ind_data.csv"));
 
-disp("end");
