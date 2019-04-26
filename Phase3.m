@@ -8,6 +8,7 @@ clc
 workingdir = pwd
 endpath = fullfile(workingdir, "P3_Data");
 pcaendpath = fullfile(endpath, "PCA");
+training_endpath = fullfile(workingdir, "A2_P1_UserData");
 
 P2_datapath = fullfile(workingdir, "P2_Data");
 P2_eat = fullfile(P2_datapath, "Eat");
@@ -161,37 +162,61 @@ nea_feature_matrix = [nea_max_matrix_app' nea_mean_matrix_app' nea_min_matrix_ap
 new_ea_feature_matrix = ea_feature_matrix * pca_ea_coeff;
 new_nea_feature_matrix = nea_feature_matrix * pca_nea_coeff;
 
+% create training and testing data sets
+edata = cvpartition(size(new_ea_feature_matrix, 1), 'holdout', 0.4);
+nedata = cvpartition(size(new_nea_feature_matrix, 1), 'holdout', 0.4);
 
+ea_test_data = new_ea_feature_matrix(~edata.test, :);
+ea_train_data = new_ea_feature_matrix(edata.test, :);
+nea_test_data = new_nea_feature_matrix(~nedata.test, :);
+nea_train_data = new_nea_feature_matrix(nedata.test, :);
+
+train_data = [ea_train_data; nea_train_data];
+test_data = [ea_test_data; nea_test_data];
+train_target_data = [ones(size(ea_train_data, 1), 1); zeros(size(nea_train_data, 1), 1)]
+test_target_data = [ones(size(ea_test_data, 1), 1); zeros(size(nea_test_data, 1), 1)]
+
+fn1 = "Train_Data.csv";
+fn2 = "Test_Data.csv";
+fn3 = "Train_Target_Data.csv";
+fn4 = "Train_Test_Data.csv";
+
+disp(fn1);
+writematrix(train_data, fullfile(training_endpath, fn1));
+disp(fn2);
+writematrix(test_data, fullfile(training_endpath, fn2));
+disp(fn3);
+writematrix(train_target_data, fullfile(training_endpath, fn3));
+disp(fn4);
+writematrix(test_target_data, fullfile(training_endpath, fn4));
 
 % graphs
-graph1 = plot(pca_ea_latent);
-title("Eigenvalues Eating Actions");
-path = fullfile(pcaendpath, "EA_EG.jpg");
-saveas(graph1, path, 'jpg');
+%graph1 = plot(pca_ea_latent);
+%title("Eigenvalues Eating Actions");
+%path = fullfile(pcaendpath, "EA_EG.jpg");
+%saveas(graph1, path, 'jpg');
 
-graph2 = plot(pca_nea_latent);
-title("Eigenvalues Non-Eating Actions");
-path = fullfile(pcaendpath, "NEA_EG.jpg");
-saveas(graph2, path, 'jpg');
+%graph2 = plot(pca_nea_latent);
+%title("Eigenvalues Non-Eating Actions");
+%path = fullfile(pcaendpath, "NEA_EG.jpg");
+%saveas(graph2, path, 'jpg');
 
-graph3 = spider(pca_ea_coeff, 'EA Eigenvectors', [], [], {'Max', 'Mean', 'Min', 'Range', 'Std Dev'});
-graph4 = spider(pca_nea_coeff, 'NEA Eigenvectors', [], [], {'Max', 'Mean', 'Min', 'Range', 'Std Dev'});
+%graph3 = spider(pca_ea_coeff, 'EA Eigenvectors', [], [], {'Max', 'Mean', 'Min', 'Range', 'Std Dev'});
+%graph4 = spider(pca_nea_coeff, 'NEA Eigenvectors', [], [], {'Max', 'Mean', 'Min', 'Range', 'Std Dev'});
 
-path = fullfile(pcaendpath, "EA_EG_spider.jpg");
-saveas(graph3, path, 'jpg');
-path = fullfile(pcaendpath, "NEA_EG_spider.jpg");
-saveas(graph4, path, 'jpg');
+%path = fullfile(pcaendpath, "EA_EG_spider.jpg");
+%saveas(graph3, path, 'jpg');
+%path = fullfile(pcaendpath, "NEA_EG_spider.jpg");
+%saveas(graph4, path, 'jpg');
 
 % plots with new feature matrix and 3 principal components
-for i=1:3 
-    subplot(3,1,i);
-    hold on;
-    graph5 = plot(ea_feature_matrix(:,i) * pca_ea_coeff(i));
-    graph5 = plot(nea_feature_matrix(:,i) * pca_nea_coeff(i));
-    legend('Eating', 'Non-Eating');
-end
+%for i=1:3 
+%    subplot(3,1,i);
+%    hold on;
+%    graph5 = plot(ea_feature_matrix(:,i) * pca_ea_coeff(i));
+%    graph5 = plot(nea_feature_matrix(:,i) * pca_nea_coeff(i));
+%    legend('Eating', 'Non-Eating');
+%end
 
-path = fullfile(pcaendpath, "PrinCompGraphs.jpg");
-saveas(graph5, path, 'jpg');
-
-
+%path = fullfile(pcaendpath, "PrinCompGraphs.jpg");
+%saveas(graph5, path, 'jpg');

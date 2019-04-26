@@ -104,35 +104,35 @@ for i=1:size(users,1)
     ea_new_featurematrix = ea_featurematrix * pca_coeff;
     [pca_coeff, pca_score, pca_latent] = pca(nea_featurematrix);
     nea_new_featurematrix = nea_featurematrix * pca_coeff;
-    
-    disp(ea_new_fm_file);
+        
+    disp(fn3);
     writematrix(ea_new_featurematrix, ea_new_fm_file);
-    disp(nea_new_fm_file);
+    disp(fn4);
     writematrix(nea_new_featurematrix, nea_new_fm_file);
     
     % creating training data
-    data = cvpartition(size(ea_new_featurematrix,1), 'holdout', 0.4)
-    ea_traindata = ea_new_featurematrix(~data.test, :);
-    ea_testdata = ea_new_featurematrix(data.test, :);
+    edata = cvpartition(size(ea_new_featurematrix,1), 'holdout', 0.4)
+    nedata = cvpartition(size(nea_new_featurematrix,1), 'holdout', 0.4)
+    ea_traindata = ea_new_featurematrix(~edata.test, :);
+    ea_testdata = ea_new_featurematrix(edata.test, :);
+    nea_traindata = nea_new_featurematrix(~nedata.test,:);
+    nea_testdata = nea_new_featurematrix(nedata.test,:);
     
-    ndata = cvpartition(size(nea_new_featurematrix,1), 'holdout', 0.4)
-    nea_traindata = nea_new_featurematrix(~ndata.test, :);
-    nea_testdata = nea_new_featurematrix(ndata.test, :);
+    train_data = [ea_traindata; nea_traindata];
+    targetdata = [ones(size(ea_traindata, 1), 1); zeros(size(nea_traindata, 1), 1)];
+    test_data = [ea_testdata; nea_testdata];
     
     % save data
-    fn5 = "Eat_Test_Data.csv";
-    fn6 = "Eat_Train_Data.csv";
-    fn7 = "NotEat_Test_Data.csv";
-    fn8 = "NotEat_Train_Data.csv";
+    fn5 = "Test_Data.csv";
+    fn6 = "Train_Data.csv";
+    fn7 = "Target_Data.csv";
     
     disp(fn5);
+    writematrix(train_data, fullfile(endpath, user, fn5));2
     disp(fn6);
+    writematrix(test_data, fullfile(endpath, user, fn6));
     disp(fn7);
-    disp(fn8);
-    writematrix(ea_traindata, fullfile(endpath, user, fn5));
-    writematrix(ea_testdata, fullfile(endpath, user, fn6));
-    writematrix(nea_traindata, fullfile(endpath, user, fn7));
-    writematrix(nea_testdata, fullfile(endpath, user, fn8));
+    writematrix(targetdata, fullfile(endpath, user, fn7));
     
     % reset
     ea_max = [];
@@ -153,4 +153,7 @@ for i=1:size(users,1)
     ea_testdata = [];
     nea_traindata = [];
     nea_testdata = [];
+    train_data = [];
+    target_data = [];
+    test_data = [];
 end
