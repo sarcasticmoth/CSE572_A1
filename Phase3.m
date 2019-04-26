@@ -16,6 +16,11 @@ P2_neat = fullfile(P2_datapath, "NotEat");
 
 if ~exist(endpath, 'dir')
     mkdir(endpath);
+end
+if ~exist(training_endpath, 'dir')
+    mkdir(training_endpath);
+end
+if ~exist(pcaendpath, 'dir')
     mkdir(pcaendpath);
 end
 
@@ -97,7 +102,8 @@ end
 ea_feature_matrix = [ea_max_matrix_app' ea_mean_matrix_app' ea_min_matrix_app' ea_range_matrix_app' ea_stddev_matrix_app'];
 
 % PCA
-[pca_ea_coeff, pca_ea_score, pca_ea_latent] = pca(ea_feature_matrix);
+y = normalize(ea_feature_matrix);
+[pca_ea_coeff, pca_ea_score, pca_ea_latent] = pca(y);
 
 % coeff - eigenvectors
 % latent - eigenvalues
@@ -156,20 +162,16 @@ end
 nea_feature_matrix = [nea_max_matrix_app' nea_mean_matrix_app' nea_min_matrix_app' nea_range_matrix_app' nea_stddev_matrix_app'];
 
 % PCA
-[pca_nea_coeff, pca_nea_score, pca_nea_latent] = pca(nea_feature_matrix);
+x = normalize(nea_feature_matrix);
+[pca_nea_coeff, pca_nea_score, pca_nea_latent] = pca(x);
 
 % new feature matrix
 new_ea_feature_matrix = ea_feature_matrix * pca_ea_coeff;
 new_nea_feature_matrix = nea_feature_matrix * pca_nea_coeff;
 
 % create training and testing data sets
-edata = cvpartition(size(new_ea_feature_matrix, 1), 'holdout', 0.4);
-nedata = cvpartition(size(new_nea_feature_matrix, 1), 'holdout', 0.4);
-
-ea_test_data = new_ea_feature_matrix(~edata.test, :);
-ea_train_data = new_ea_feature_matrix(edata.test, :);
-nea_test_data = new_nea_feature_matrix(~nedata.test, :);
-nea_train_data = new_nea_feature_matrix(nedata.test, :);
+[ea_train_data, ~, ea_test_data] = dividerand(new_ea_feature_matrix', 0.6, 0, 0.4);
+[nea_train_data, ~, nea_test_data] = dividerand(new_nea_feature_matrix', 0.6, 0, 0.4);
 
 train_data = [ea_train_data; nea_train_data];
 test_data = [ea_test_data; nea_test_data];

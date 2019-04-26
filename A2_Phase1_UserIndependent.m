@@ -1,6 +1,8 @@
 clear all
 clc
 
+% User Independent %
+
 workingdir = pwd;
 datapath = fullfile(workingdir, "A2_P1_UserData");
 endpath = fullfile(workingdir, "A2_Training");
