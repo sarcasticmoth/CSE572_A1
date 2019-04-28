@@ -115,18 +115,7 @@ for i=1:size(users,1)
     disp(fn4);
     writematrix(nea_new_featurematrix, nea_new_fm_file);
     
-    % creating training data
-    %edata = cvpartition(size(ea_new_featurematrix,1), 'holdout', 0.4)
-    %nedata = cvpartition(size(nea_new_featurematrix,1), 'holdout', 0.4)
-    %ea_traindata = ea_new_featurematrix(~edata.test, :);
-    %ea_testdata = ea_new_featurematrix(edata.test, :);
-    %nea_traindata = nea_new_featurematrix(~nedata.test,:);
-    %nea_testdata = nea_new_featurematrix(nedata.test,:);
-    
-    %train_data = [ea_traindata; nea_traindata];
-    %targetdata = [ones(size(ea_traindata, 1), 1); zeros(size(nea_traindata, 1), 1)];
-    %test_data = [ea_testdata; nea_testdata];
-   
+    % creating training data  
     [ea_train_data, ea_valudation, ea_test_data] = dividerand(ea_new_featurematrix', 0.6, 0, 0.4);
     [nea_train_data, nea_valudation, nea_test_data] = dividerand(nea_new_featurematrix', 0.6, 0, 0.4);
     train_data = [ea_train_data'; nea_train_data'];
@@ -137,8 +126,8 @@ for i=1:size(users,1)
     % save data
     fn5 = "Test_Data.csv";
     fn6 = "Train_Data.csv";
-    fn7 = "Train_Target_Data.csv";
-    fn8 = "Train_Test_Data.csv";
+    fn7 = "Train_Test_Data.csv";
+    fn8 = "Train_Target_Data.csv";
     
     disp(fn5);
     writematrix(train_data, fullfile(endpath, user, fn5));

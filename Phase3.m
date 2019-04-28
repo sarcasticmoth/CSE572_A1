@@ -182,22 +182,6 @@ fn2 = "Test_Data.csv";
 fn3 = "Train_Target_Data.csv";
 fn4 = "Train_Test_Data.csv";
 
-% test
-
-%edata = cvpartition(size(new_ea_feature_matrix, 1), 'holdout', 0.4);
-%nedata = cvpartition(size(new_nea_feature_matrix, 1), 'holdout', 0.4);
-
-%ea_test_data = new_ea_feature_matrix(edata.test, :);
-%ea_train_data = new_ea_feature_matrix(~edata.test, :);
-%nea_test_data = new_nea_feature_matrix(nedata.test, :);
-%nea_train_data = new_nea_feature_matrix(~nedata.test, :);
-%train_data = [ea_train_data, nea_train_data];
-%test_data = [ea_test_data, nea_test_data];
-%train_target_data = [ones(size(ea_train_data, 1), size(ea_train_data, 2)), zeros(size(nea_train_data, 1), size(nea_train_data, 2))]
-%test_target_data = [ones(size(ea_test_data, 1), size(ea_test_data, 2)), zeros(size(nea_test_data, 1), size(nea_test_data, 2))]
-
-% end test
-
 disp(fn1);
 writematrix(train_data, fullfile(training_endpath, fn1));
 disp(fn2);
