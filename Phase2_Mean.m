@@ -120,19 +120,21 @@ labels = ["Eating", "Non-Eating"];
 
 % loop through all the sensors, left to right
 % matrices for eating and non-eating are the same size
-for i=1:size(all_ea_mean_matrix,1)
-    eat = all_ea_mean_matrix(:,i);
-    noteat = all_nea_mean_matrix(:,i);
-    
-    graph = plot(u, eat, 'm');
-    hold on;
-    graph = plot(u, noteat, 'g');
-    title(sensors(i) + " Mean");
-    legend(labels);
-    % legend location
-    set(gcf, 'Units', 'Normalized');
-    hold off;
-    path = fullfile(endgraphpath, sensors(i) + "_mean.jpg");
-    saveas(graph, path, 'jpg');
+if(size(all_ea_mean_matrix,1) < 11)
+    for i=1:size(all_ea_mean_matrix,1)
+        eat = all_ea_mean_matrix(:,i);
+        noteat = all_nea_mean_matrix(:,i);
+
+        graph = plot(u, eat, 'm');
+        hold on;
+        graph = plot(u, noteat, 'g');
+        title(sensors(i) + " Mean");
+        legend(labels);
+        % legend location
+        set(gcf, 'Units', 'Normalized');
+        hold off;
+        path = fullfile(endgraphpath, sensors(i) + "_mean.jpg");
+        saveas(graph, path, 'jpg');
+    end
 end
 

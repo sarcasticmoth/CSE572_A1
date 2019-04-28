@@ -113,18 +113,20 @@ labels = ["Eating", "Non-Eating"];
 
 % loop through all the sensors, left to right
 % matrices for eating and non-eating are the same size
-for i=1:size(all_ea_min_matrix,1)
-    eat = all_ea_min_matrix(:,i);
-    noteat = all_nea_min_matrix(:,i);
-    
-    graph = plot(u, eat, 'm');
-    hold on;
-    graph = plot(u, noteat, 'g');
-    title(sensors(i) + " Min");
-    legend(labels);
-    set(gcf, 'Units', 'Normalized');
-    hold off;
-    path = fullfile(endgraphpath, sensors(i) + "_min.jpg");
-    saveas(graph, path, 'jpg');
+if(size(all_ea_min_matrix, 1) < 11)
+    for i=1:size(all_ea_min_matrix,1)
+        eat = all_ea_min_matrix(:,i);
+        noteat = all_nea_min_matrix(:,i);
+
+        graph = plot(u, eat, 'm');
+        hold on;
+        graph = plot(u, noteat, 'g');
+        title(sensors(i) + " Min");
+        legend(labels);
+        set(gcf, 'Units', 'Normalized');
+        hold off;
+        path = fullfile(endgraphpath, sensors(i) + "_min.jpg");
+        saveas(graph, path, 'jpg');
+    end
 end
 

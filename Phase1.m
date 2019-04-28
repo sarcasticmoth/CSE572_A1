@@ -96,8 +96,6 @@ for i = 1:size(list, 1)
     NEAfile = fullfile(endPath, user + "_" + 'IMU_NotEat.csv');
     testEA = fullfile(endPath, user + "_IMU_Eat_Train.csv");
     
-    data = csvpartition(size(imu_EA, 1), 'holdout', 0.4);
-    
     disp(EAfile);
     writematrix(imu_EA, EAfile);
     disp(NEAfile);

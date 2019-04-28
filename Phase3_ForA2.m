@@ -100,15 +100,11 @@ for i=1:size(users,1)
     nea_new_fm_file = fullfile(endpath, user, fn4);
     
     % PCA
-    [pca_coeff, pca_score, pca_latent] = pca(ea_featurematrix);
+    x = normalize(ea_featurematrix);
+    [pca_coeff] = pca(x);
     ea_new_featurematrix = ea_featurematrix * pca_coeff;
-    [pca_coeff, pca_score, pca_latent] = pca(nea_featurematrix);
+    [pca_coeff] = pca(nea_featurematrix);
     nea_new_featurematrix = nea_featurematrix * pca_coeff;
-<<<<<<< HEAD
-=======
-    
-    targetdata = [size(];
->>>>>>> 66d648ab4ac6ae263f846b8e603404c6e4849b29
         
     disp(fn3);
     writematrix(ea_new_featurematrix, ea_new_fm_file);
@@ -123,13 +119,10 @@ for i=1:size(users,1)
     nea_traindata = nea_new_featurematrix(~nedata.test,:);
     nea_testdata = nea_new_featurematrix(nedata.test,:);
     
-<<<<<<< HEAD
     train_data = [ea_traindata; nea_traindata];
     targetdata = [ones(size(ea_traindata, 1), 1); zeros(size(nea_traindata, 1), 1)];
     test_data = [ea_testdata; nea_testdata];
-    
-=======
->>>>>>> 66d648ab4ac6ae263f846b8e603404c6e4849b29
+   
     % save data
     fn5 = "Test_Data.csv";
     fn6 = "Train_Data.csv";
@@ -165,3 +158,5 @@ for i=1:size(users,1)
     target_data = [];
     test_data = [];
 end
+
+disp("end");

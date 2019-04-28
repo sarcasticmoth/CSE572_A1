@@ -32,6 +32,38 @@ test_data = readmatrix(fullfile(datapath, "Test_Data.csv"));
 train_target_data = readmatrix(fullfile(datapath, "Train_Target_Data.csv"));
 test_target_data = readmatrix(fullfile(datapath, "Train_Test_Data.csv"));
 
+%
+% decision trees
+%
+
+dt_precision = 0;
+dt_recall = 0;
+dt_fscore = 0;
+
+dtree = fitctree(train_data, train_target_data);
+dt = predict(dtree, test_data);
+
+[confusion_matrix, ~] = confusionmat(dt, test_target_data);
+
+% calculate precision
+for i=1:size(confusion_matrix,1)
+    precision(i) = confusion_matrix(i,i) / sum(confusion_matrix(i,:));
+end
+
+dt_precision = sum(precision) / size(confusion_matrix, 1);
+
+% calculate recall
+for i=size(confusion_matrix, 1)
+    recall(i) = confusion_matrix(i,i) / sum(confusion_matrix(:, i));
+end
+
+dt_recall = sum(recall)/size(confusion_matrix, 1);
+dt_fscore = 2 * dt_recall * dt_precision / (dt_precision + dt_recall)
+
+% graph %
+view(dtree);
+view(dtree, 'mode', 'graph');
+
 % NN
 net = feedforwardnet(10);
 net = train(net, train_data', train_target_data');
@@ -57,33 +89,6 @@ nn_fscore = 2 * nn_recall * nn_precision / (nn_precision + nn_recall)
 
 % graph %
 view(net)
-
-%
-% decision trees
-%
-dtree = fitctree(train_data, train_target_data);
-dt = predict(dtree, test_data);
-
-[confusion_matrix, ~] = confusionmat(dt, test_target_data);
-
-% calculate precision
-for i=1:size(confusion_matrix,1)
-    precision(i) = confusion_matrix(i,i) / sum(confusion_matrix(i,:));
-end
-
-dt_precision = sum(precision) / size(confusion_matrix, 1);
-
-% calculate recall
-for i=size(confusion_matrix, 1)
-    recall(i) = confusion_matrix(i,i) / sum(confusion_matrix(:, i));
-end
-
-dt_recall = sum(recall)/size(confusion_matrix, 1);
-dt_fscore = 2 * dt_recall * dt_precision / (dt_precision + dt_recall)
-
-% graph %
-view(dtree);
-view(dtree, 'mode', 'graph');
 
 %
 % SVM
