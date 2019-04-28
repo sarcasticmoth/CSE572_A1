@@ -138,7 +138,7 @@ for i=1:size(users,1)
     fn5 = "Test_Data.csv";
     fn6 = "Train_Data.csv";
     fn7 = "Train_Target_Data.csv";
-    fn8 = "Train_Test_Data";
+    fn8 = "Train_Test_Data.csv";
     
     disp(fn5);
     writematrix(train_data, fullfile(endpath, user, fn5));
