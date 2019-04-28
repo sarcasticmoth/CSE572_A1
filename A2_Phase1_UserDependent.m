@@ -26,18 +26,18 @@ end
 
 groups = size(users, 1);
 
-% Training and Testing
-train_data = readmatrix(fullfile(datapath, "Train_Data.csv"));
-test_data = readmatrix(fullfile(datapath, "Test_Data.csv"));
-train_target_data = readmatrix(fullfile(datapath, "Train_Target_Data.csv"));
-test_target_data = readmatrix(fullfile(datapath, "Train_Test_Data.csv"));
-
 columns = ["Group", "Neural Network FScore", "Neural Network Recall" , "Neural Network Precision", "Decision Tree FScore", "Decision Tree Recall", "Decision Tree Precision", "SVM FScore", "SVM Recall", "SVM Precision"];
 group_data = [];
 group_data = [group_data; columns;];
 
 for i=1:size(users,1)
     user = users{i};
+    
+    % Training and Testing
+    train_data = readmatrix(fullfile(datapath, user, "Train_Data.csv"));
+    test_data = readmatrix(fullfile(datapath, user, "Test_Data.csv"));
+    train_target_data = readmatrix(fullfile(datapath, user, "Train_Target_Data.csv"));
+    test_target_data = readmatrix(fullfile(datapath, user, "Train_Test_Data.csv"));
 
     %
     % decision trees
