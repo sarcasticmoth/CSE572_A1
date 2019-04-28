@@ -44,7 +44,7 @@ for b=1:ng - 1
     test_map = [test_map; [x y]];
 end
 
-columns = ["Group", "Decision Tree FScore", "Decision Tree Recall", "Decision Tree Precision", "SVM FScore", "SVM Recall", "SVM Precision"];
+columns = ["Group", "Decision Tree FScore", "Decision Tree Recall", "Decision Tree Precision", "SVM FScore", "SVM Recall", "SVM Precision", "NN F1Score", "NN Recall", "NN Precision"];
 group_data = [];
 group_data = [group_data; columns;];
 
@@ -88,6 +88,9 @@ for u=1:ng
     dt_recall = sum(recall)/size(dt_confusion_matrix, 1);
     dt_fscore = 2 * dt_recall * dt_precision / (dt_precision + dt_recall)
     
+    %view(dtree);
+    %view(dtree, 'mode', 'graph');
+    
     %
     % SVM
     %
@@ -121,12 +124,35 @@ for u=1:ng
     % save
     %
     
-    data = ["Group" + u, dt_recall, dt_precision, dt_fscore, svm_recall, svm_precision, svm_fscore];
-    
+    % NN
+    net = patternnet(40);
+    net = train(net, train_data', train_target_data');
+    nn = sim(net, test_data');
+    nn(nn >= 0.5) = 1;
+    nn(nn < 0.5) = 0;
+    [nconfusion_matrix, ~] = confusionmat(nn, test_target_data');
+    x = confusionmatStats(nn, test_target_data');
+    % calculate precision
+    for i=1:size(nconfusion_matrix,1)
+        nprecision(i) = nconfusion_matrix(i,i) / sum(nconfusion_matrix(i,:));
+    end
+    nprecision(isnan(nprecision)) = [];
+    nn_precision = sum(nprecision) / size(nconfusion_matrix, 1);
+
+    % calculate recall
+    for i=size(nconfusion_matrix, 1)
+        nrecall(i) = nconfusion_matrix(i,i) / sum(nconfusion_matrix(:, i));
+    end
+
+    nn_recall = sum(nrecall)/size(nconfusion_matrix, 1);
+    nn_fscore = 2 * nn_recall * nn_precision / (nn_precision + nn_recall)
+
+    data = ["Group" + u, dt_recall, dt_precision, dt_fscore, svm_recall, svm_precision, svm_fscore, nn_fscore, nn_recall, nn_precision];
+
     group_data = [group_data; data];
-        
+
     disp("end group" + u);
-    
+
 end
 
 disp("write dependent data");
