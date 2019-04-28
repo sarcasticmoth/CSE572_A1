@@ -27,10 +27,15 @@ end
 %end
 
 % Training and Testing
-train_data = readmatrix(fullfile(datapath, "Train_Data.csv"));
-test_data = readmatrix(fullfile(datapath, "Test_Data.csv"));
-train_target_data = readmatrix(fullfile(datapath, "Train_Target_Data.csv"));
-test_target_data = readmatrix(fullfile(datapath, "Train_Test_Data.csv"));
+ea_train_data = readmatrix(fullfile(datapath, "Eat_Train_Data.csv"));
+nea_train_data = readmatrix(fullfile(datapath, "NotEat_Train_Data.csv"));
+ea_test_data = readmatrix(fullfile(datapath, "Eat_Test_Data.csv"));
+nea_test_data = readmatrix(fullfile(datapath, "NotEat_Test_Data.csv"));
+
+train_data = [ea_train_data; nea_train_data];
+test_data = [ea_test_data; nea_test_data];
+train_target_data = [ones(size(ea_train_data, 1), 1); zeros(size(nea_train_data, 1), 1)];
+test_target_data = [ones(size(ea_test_data, 1), 1); zeros(size(nea_test_data, 1), 1)];
 
 %
 % decision trees
@@ -47,14 +52,14 @@ dt = predict(dtree, test_data);
 
 % calculate precision
 for i=1:size(confusion_matrix,1)
-    precision(i) = confusion_matrix(i,i) / sum(confusion_matrix(i,:));
+    precision(i) = confusion_matrix(i,i) / sum(confusion_matrix(:, i));
 end
-
+precision(isnan(precision)) = [];
 dt_precision = sum(precision) / size(confusion_matrix, 1);
 
 % calculate recall
 for i=size(confusion_matrix, 1)
-    recall(i) = confusion_matrix(i,i) / sum(confusion_matrix(:, i));
+    recall(i) = confusion_matrix(i,i) / sum(confusion_matrix(i, :));
 end
 
 dt_recall = sum(recall)/size(confusion_matrix, 1);
@@ -65,7 +70,7 @@ view(dtree);
 view(dtree, 'mode', 'graph');
 
 % NN
-net = feedforwardnet(10);
+net = patternnet(10);
 net = train(net, train_data', train_target_data');
 nn = sim(net, test_data');
 nn(nn >= 0.5) = 1;

@@ -172,24 +172,37 @@ new_nea_feature_matrix = nea_feature_matrix * pca_nea_coeff;
 % create training and testing data sets
 [ea_train_data, ea_validation, ea_test_data] = dividerand(new_ea_feature_matrix', 0.6, 0, 0.4);
 [nea_train_data, nea_validation, nea_test_data] = dividerand(new_nea_feature_matrix', 0.6, 0, 0.4);
-train_data = [ea_train_data'; nea_train_data'];
-test_data = [ea_test_data'; nea_test_data'];
-train_target_data = [ones(size(ea_train_data', 1), 1); zeros(size(nea_train_data', 1), 1)]
-test_target_data = [ones(size(ea_test_data', 1), 1); zeros(size(nea_test_data', 1), 1)]
+%train_data = [ea_train_data'; nea_train_data'];
+%test_data = [ea_test_data'; nea_test_data'];
+%train_target_data = [ones(size(ea_train_data', 1), 1); zeros(size(nea_train_data', 1), 1)]
+%test_target_data = [ones(size(ea_test_data', 1), 1); zeros(size(nea_test_data', 1), 1)]
 
-fn1 = "Train_Data.csv";
-fn2 = "Test_Data.csv";
-fn3 = "Train_Target_Data.csv";
-fn4 = "Train_Test_Data.csv";
+%fn1 = "Train_Data.csv";
+%fn2 = "Test_Data.csv";
+%fn3 = "Train_Target_Data.csv";
+%fn4 = "Train_Test_Data.csv";
+fn1 = "Eat_Train_Data.csv";
+fn2 = "Eat_Test_Data.csv";
+fn3 = "NotEat_Train_Data.csv";
+fn4 = "NotEat_Test_Data.csv";
 
 disp(fn1);
-writematrix(train_data, fullfile(training_endpath, fn1));
+writematrix(ea_train_data', fullfile(training_endpath, fn1));
 disp(fn2);
-writematrix(test_data, fullfile(training_endpath, fn2));
+writematrix(ea_test_data', fullfile(training_endpath, fn2));
 disp(fn3);
-writematrix(train_target_data, fullfile(training_endpath, fn3));
+writematrix(nea_train_data', fullfile(training_endpath, fn3));
 disp(fn4);
-writematrix(test_target_data, fullfile(training_endpath, fn4));
+writematrix(nea_test_data', fullfile(training_endpath, fn4));
+
+%disp(fn1);
+%writematrix(train_data, fullfile(training_endpath, fn1));
+%disp(fn2);
+%writematrix(test_data, fullfile(training_endpath, fn2));
+%disp(fn3);
+%writematrix(train_target_data, fullfile(training_endpath, fn3));
+%disp(fn4);
+%writematrix(test_target_data, fullfile(training_endpath, fn4));
 
 % graphs
 %graph1 = plot(pca_ea_latent);

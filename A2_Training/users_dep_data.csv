@@ -1,29 +1,8 @@
-Group,Neural Network FScore,Neural Network Recall,Neural Network Precision,Decision Tree FScore,Decision Tree Recall,Decision Tree Precision,SVM FScore,SVM Recall,SVM Precision
-Groupuser10,1,1,1,1,1,1,1,1,1
-Groupuser11,1,1,1,1,1,1,1,1,1
-Groupuser12,1,1,1,1,1,1,1,1,1
-Groupuser13,1,1,1,1,1,1,1,1,1
-Groupuser14,1,1,1,1,1,1,1,1,1
-Groupuser16,1,1,1,1,1,1,1,1,1
-Groupuser17,1,1,1,1,1,1,1,1,1
-Groupuser19,1,1,1,1,1,1,1,1,1
-Groupuser21,1,1,1,1,1,1,1,1,1
-Groupuser22,1,1,1,1,1,1,1,1,1
-Groupuser23,1,1,1,1,1,1,1,1,1
-Groupuser24,1,1,1,1,1,1,1,1,1
-Groupuser25,1,1,1,1,1,1,1,1,1
-Groupuser26,1,1,1,1,1,1,1,1,1
-Groupuser27,1,1,1,1,1,1,1,1,1
-Groupuser28,1,1,1,1,1,1,1,1,1
-Groupuser29,1,1,1,1,1,1,1,1,1
-Groupuser30,1,1,1,1,1,1,1,1,1
-Groupuser31,1,1,1,1,1,1,1,1,1
-Groupuser32,1,1,1,1,1,1,1,1,1
-Groupuser33,1,1,1,1,1,1,1,1,1
-Groupuser34,1,1,1,1,1,1,1,1,1
-Groupuser36,1,1,1,1,1,1,1,1,1
-Groupuser37,1,1,1,1,1,1,1,1,1
-Groupuser38,1,1,1,1,1,1,1,1,1
-Groupuser39,1,1,1,1,1,1,1,1,1
-Groupuser40,1,1,1,1,1,1,1,1,1
-Groupuser41,1,1,1,1,1,1,1,1,1
+Group,Decision Tree FScore,Decision Tree Recall,Decision Tree Precision,SVM FScore,SVM Recall,SVM Precision
+Group1,0.5,0.97059,0.66,0.21875,0.75,0.33871
+Group2,0.34375,0.7915,0.47933,0.46875,0.75,0.57692
+Group3,0.5,0.94444,0.65385,0.5,0.7963,0.61429
+Group4,0.5,0.86364,0.63333,0.3125,0.72672,0.43706
+Group5,0.28125,0.7,0.40127,0.25,0.83333,0.38462
+Group6,0.34375,0.75397,0.47221,0.3125,0.72672,0.43706
+Group7,0.34375,0.83333,0.48673,0.375,0.66194,0.47877

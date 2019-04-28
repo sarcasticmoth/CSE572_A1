@@ -14,58 +14,53 @@ if ~exist(endpath, 'dir')
     mkdir(endpath);
 end
 
-% get list of users
-tmp = dir(originaldatapath);
-tmp = tmp(~ismember({tmp.name},{'.','..'}));
-users = [];
-for i=1:size(tmp,1)
-    users = [users; cellstr(tmp(i).name)];
-end
-
-groups = size(users, 1);
+groups = 28;
 
 % Training and Testing
-train_data_orig = readmatrix(fullfile(datapath, "Train_Data.csv"));
-test_data_orig = readmatrix(fullfile(datapath, "Test_Data.csv"));
-train_target_data_orig = readmatrix(fullfile(datapath, "Train_Target_Data.csv"));
-test_target_data_orig = readmatrix(fullfile(datapath, "Train_Test_Data.csv"));
+EA_Train_Data = readmatrix(fullfile(datapath, "Eat_Train_Data.csv"));
+EA_Test_Data = readmatrix(fullfile(datapath, "Eat_Test_Data.csv"));
+NEA_Train_Data = readmatrix(fullfile(datapath, "NotEat_Train_Data.csv"));
+NEA_Test_Data = readmatrix(fullfile(datapath, "NotEat_Test_Data.csv"));
 
-% create mapping
-mapping = [];
-interval = (size(train_data_orig, 1) / groups) - 1;
-initial = size(mapping, 1) + 1;
-mapping = [mapping; [initial initial + interval]];
-for a=1:groups - 1
-    x = mapping(a, 2) + 1;
-    y = x + interval;
-    mapping = [mapping; [x y]];
+% create mapping %
+train_map = [];
+ng = groups / 4;
+interval = (size(EA_Train_Data, 1) / ng) - 1;
+initial = size(train_map, 1) + 1;
+train_map = [train_map; [initial initial + interval]];
+for a=1:ng - 1
+   x = train_map(a, 2) + 1;
+   y = x + interval;
+   train_map = [train_map; [x y]];
 end
 
-% mapping for test data
-t_mapping = [];
-t_interval = (size(test_data_orig, 1) / groups) - 1;
-t_initial = size(t_mapping, 1) + 1;
-t_mapping = [t_mapping; [t_initial t_initial + t_interval]];
-for a=1:groups - 1
-    x = t_mapping(a, 2) + 1;
-    y = x + t_interval;
-    t_mapping = [t_mapping; [x y]];
+test_map = [];
+interval = (size(EA_Test_Data, 1) / ng) - 1;
+initial = size(test_map, 1) + 1;
+test_map = [test_map; [initial initial + interval]];
+for b=1:ng - 1
+    x = test_map(b, 2) + 1;
+    y = x + interval;
+    test_map = [test_map; [x y]];
 end
 
 columns = ["Group", "Neural Network FScore", "Neural Network Recall" , "Neural Network Precision", "Decision Tree FScore", "Decision Tree Recall", "Decision Tree Precision", "SVM FScore", "SVM Recall", "SVM Precision"];
 group_data = [];
 group_data = [group_data; columns;];
 
-for i=1:size(users,1)
-    user = users{i};
-    disp("procesing " + user + "....");
-    
+for u=1:ng   
     % Training and Testing
-    train_data = train_data_orig(mapping(i, 1) : mapping(i, 2), :);
-    test_data = test_data_orig(t_mapping(i, 1) : t_mapping(i, 2), :);
-    train_target_data = train_target_data_orig(mapping(i, 1), :);
-    test_target_data = test_target_data_orig(t_mapping(i, 1), :);
-
+    ea_temp_train = EA_Train_Data(train_map(u, 1) : train_map(u, 2), :);
+    nea_temp_train = NEA_Train_Data(train_map(u, 1) : train_map(u, 2), :);
+    train_data = [ea_temp_train; nea_temp_train];
+    
+    ea_temp_test = EA_Test_Data(test_map(u, 1) : test_map(u, 2), :);
+    nea_temp_test = NEA_Test_Data(test_map(u, 1) : test_map(u, 2), :);
+    test_data = [ea_temp_test; nea_temp_test];
+    
+    train_target_data = [ones(size(ea_temp_train, 1), 1); zeros(size(nea_temp_train, 1), 1)];
+    test_target_data = [ones(size(ea_temp_test, 1), 1); zeros(size(nea_temp_test, 1), 1)];
+    
     %
     % decision trees
     %
@@ -76,50 +71,32 @@ for i=1:size(users,1)
     dtree = fitctree(train_data, train_target_data);
     dt = predict(dtree, test_data);
     
-    [confusion_matrix, ~] = confusionmat(dt, test_target_data);
+    [dt_confusion_matrix, order] = confusionmat(dt, test_target_data);
     
     % calculate precision, recall and fscore    
-    for i=1:size(confusion_matrix,1)
-        precision(i) = confusion_matrix(i,i) / sum(confusion_matrix(i,:));
+    for i=1:size(dt_confusion_matrix,1)
+        precision(i) = dt_confusion_matrix(i,i) / sum(dt_confusion_matrix(i,:));
     end
-
-    dt_precision = sum(precision) / size(confusion_matrix, 1);
+    precision(isnan(precision)) = [];
+    dt_precision = sum(precision) / size(dt_confusion_matrix, 1);
 
     % calculate recall
-    for i=size(confusion_matrix, 1)
-        recall(i) = confusion_matrix(i,i) / sum(confusion_matrix(:, i));
+    for i=size(dt_confusion_matrix, 1)
+        recall(i) = dt_confusion_matrix(i,i) / sum(dt_confusion_matrix(:, i));
     end
 
-    dt_recall = sum(recall)/size(confusion_matrix, 1);
+    dt_recall = sum(recall)/size(dt_confusion_matrix, 1);
     dt_fscore = 2 * dt_recall * dt_precision / (dt_precision + dt_recall)
     
     %
-    % neural networks
+    % neural networks files
     %
-    nn_precision = 0;
-    nn_recall = 0;
-    nn_fscore = 0;
+    fn1 = "group" + i + "Train_Data.csv";
+    fn2 = "group" + i + "Test_Data.csv";
+    fn3 = "group" + i + "Train_Target_Data.csv";
+    fn4 = "group" + i + "Test_Target_Data.csv";
     
-    n = feedforwardnet(10);
-    net = train(n, train_data', train_target_data');
-    neural_net = sim(net, test_data');
-    
-    [confusion_matrix, ~] = confusionmat(neural_net, test_target_data');
-    
-    % calculate precision, recall and fscore
-    for i=1:size(confusion_matrix,1)
-        precision(i) = confusion_matrix(i,i) / sum(confusion_matrix(i,:));
-    end
-
-    nn_precision = sum(precision) / size(confusion_matrix, 1);
-
-    % calculate recall
-    for i=size(confusion_matrix, 1)
-        recall(i) = confusion_matrix(i,i) / sum(confusion_matrix(:, i));
-    end
-
-    nn_recall = sum(recall)/size(confusion_matrix, 1);
-    nn_fscore = 2 * nn_recall * nn_precision / (nn_precision + nn_recall)
+    write
     
     %
     % SVM
@@ -131,21 +108,21 @@ for i=1:size(users,1)
     svmdata = fitcsvm(train_data, train_target_data, 'Standardize', true, 'KernelFunction', 'RBF', 'KernelScale', 'auto');
     svm = predict(svmdata, test_data);
 
-    [confusion_matrix, ~] = confusionmat(svm, test_target_data);
+    [svm_confusion_matrix, order] = confusionmat(svm, test_target_data);
 
     % calculate precision, recall and fscore
-    for i=1:size(confusion_matrix,1)
-        precision(i) = confusion_matrix(i,i) / sum(confusion_matrix(i,:));
+    for i=1:size(svm_confusion_matrix,1)
+        precision(i) = svm_confusion_matrix(i,i) / sum(svm_confusion_matrix(i,:));
     end
-
-    svm_precision = sum(precision) / size(confusion_matrix, 1);
+    precision(isnan(precision)) = [];
+    svm_precision = sum(precision) / size(svm_confusion_matrix, 1);
 
     % calculate recall
-    for i=size(confusion_matrix, 1)
-        recall(i) = confusion_matrix(i,i) / sum(confusion_matrix(:, i));
+    for i=size(svm_confusion_matrix, 1)
+        recall(i) = svm_confusion_matrix(i,i) / sum(svm_confusion_matrix(:, i));
     end
 
-    svm_recall = sum(recall)/size(confusion_matrix, 1);
+    svm_recall = sum(recall)/size(svm_confusion_matrix, 1);
     svm_fscore = 2 * svm_recall * svm_precision / (svm_precision + svm_recall);
 
     disp("end training");
@@ -154,11 +131,11 @@ for i=1:size(users,1)
     % save
     %
     
-    data = ["Group" + user, nn_fscore, nn_recall, nn_precision, dt_fscore, dt_recall, dt_precision, svm_fscore, svm_recall, svm_precision];
+    data = ["Group" + u, nn_recall, nn_precision, nn_fscore, dt_recall, dt_precision, dt_fscore, svm_recall, svm_precision, svm_fscore];
     
     group_data = [group_data; data];
         
-    disp("end group" + user);
+    disp("end group" + u);
     
 end
 
